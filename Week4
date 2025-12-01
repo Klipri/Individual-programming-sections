@@ -1,0 +1,70 @@
+import hashlib
+import re
+
+
+def get_md5(s):
+    return hashlib.md5(s.encode()).hexdigest()
+
+
+def get_stretched_hash(salt, index, cache, stretch=2016):
+    if index in cache:
+        return cache[index]
+    
+    h = get_md5(salt + str(index))
+    for _ in range(stretch):
+        h = get_md5(h)
+    
+    cache[index] = h
+    return h
+
+
+def find_triplet(h):
+
+    match = re.search(r'(.)\1\1', h)
+    if match:
+        return match.group(1)
+    return None
+
+
+def has_quintuplet(h, char):
+
+    return char * 5 in h
+
+
+def solve(salt, stretch=2016):
+    cache = {}
+    keys_found = 0
+    index = 0
+    
+    while keys_found < 64:
+        h = get_stretched_hash(salt, index, cache, stretch)
+        triplet_char = find_triplet(h)
+        
+        if triplet_char:
+
+            for j in range(1, 1001):
+                h2 = get_stretched_hash(salt, index + j, cache, stretch)
+                if has_quintuplet(h2, triplet_char):
+                    keys_found += 1
+                    print(f"Key #{keys_found}: index {index}")
+                    break
+        
+        index += 1
+    
+    return index - 1
+
+
+def main():
+    salt = input("Введіть salt: ").strip()
+    
+    print("\n--- Part 1 (без stretching) ---")
+    answer1 = solve(salt, stretch=0)
+    print(f"Відповідь Part 1: {answer1}")
+    
+    print("\n--- Part 2 (з stretching 2016) ---")
+    answer2 = solve(salt, stretch=2016)
+    print(f"Відповідь Part 2: {answer2}")
+
+
+if __name__ == "__main__":
+    main()
