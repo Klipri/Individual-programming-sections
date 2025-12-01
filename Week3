@@ -1,0 +1,42 @@
+def is_safe(levels):
+    diffs = []
+    for i in range(len(levels) - 1):
+        diffs.append(levels[i + 1] - levels[i])
+    
+    all_increasing = all(d > 0 for d in diffs)
+    all_decreasing = all(d < 0 for d in diffs)
+    
+    if not (all_increasing or all_decreasing):
+        return False
+    
+    for d in diffs:
+        if abs(d) < 1 or abs(d) > 3:
+            return False
+    
+    return True
+
+
+def is_safe_with_dampener(levels):
+
+    if is_safe(levels):
+        return True
+    
+    for i in range(len(levels)):
+        new_levels = levels[:i] + levels[i + 1:]
+        if is_safe(new_levels):
+            return True
+    
+    return False
+
+
+def solve(filename):
+    count = 0
+    with open(filename, "r") as f:
+        for line in f:
+            levels = list(map(int, line.split()))
+            if is_safe_with_dampener(levels):
+                count += 1
+    return count
+
+
+print(solve("input.txt"))
