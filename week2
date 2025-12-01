@@ -1,0 +1,40 @@
+def solve(filename):
+    words = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
+    
+    def find_digit(line, pos):
+
+        if line[pos].isdigit():
+            return int(line[pos])
+        for i, word in enumerate(words):
+            if line[pos:].startswith(word):
+                return i + 1 
+        return None
+    
+    total = 0
+    with open(filename, "r") as f:
+        for line in f:
+            line = line.strip()
+            first = None
+            last = None
+            
+
+            for pos in range(len(line)):
+                d = find_digit(line, pos)
+                if d is not None:
+                    first = d
+                    break
+            
+
+            for pos in range(len(line) - 1, -1, -1):
+                d = find_digit(line, pos)
+                if d is not None:
+                    last = d
+                    break
+            
+            if first is not None and last is not None:
+                total += first * 10 + last
+    
+    return total
+
+
+print(solve("input.txt"))
