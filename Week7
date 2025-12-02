@@ -1,0 +1,22 @@
+def solve(filename):
+    horizontal = 0
+    depth = 0
+    aim = 0
+    
+    with open(filename, "r") as f:
+        for line in f:
+            command, value = line.split()
+            value = int(value)
+            
+            if command == "forward":
+                horizontal += value
+                depth += aim * value
+            elif command == "down":
+                aim += value
+            elif command == "up":
+                aim -= value
+    
+    return horizontal * depth
+
+
+print(solve("input.txt"))
